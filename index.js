@@ -1,5 +1,6 @@
 const redux = require("redux");
 const createStore = redux.createStore;
+const bindActionCreator = redux.bindActionCreators;
 
 const CAKE_ORDERED = "CAKE_ORDERED";
 const CAKE_RESTOCKED = "CAKE_RESTOCKED";
@@ -9,7 +10,7 @@ const CAKE_RESTOCKED = "CAKE_RESTOCKED";
 function orderCake() {
   return {
     type: CAKE_ORDERED,
-    quantity: 1,
+    payload: 1,
   };
 }
 
@@ -20,7 +21,7 @@ function orderCake() {
 function restockCake(qty = 1) {
   return {
     type: "CAKE_RESTOCKED",
-    quantity: qty,
+    payload: qty,
   };
 }
 
@@ -39,7 +40,7 @@ const reducer = (state = initialState, action) => {
     case CAKE_RESTOCKED:
       return {
         ...state,
-        numberOfCakes: state.numberOfCakes + action.quantity,
+        numberOfCakes: state.numberOfCakes + action.payload,
       };
     default:
       return state;
@@ -58,11 +59,16 @@ const unsubscribe = store.subscribe(() =>
 );
 
 // 5. dispatch action to update the store.
-store.dispatch(orderCake());
-store.dispatch(orderCake());
-store.dispatch(orderCake());
-store.dispatch(restockCake(3));
+// store.dispatch(orderCake());
+// store.dispatch(orderCake());
+// store.dispatch(orderCake());
+// store.dispatch(restockCake(3));
 
+const actions = bindActionCreator({ orderCake, restockCake }, store.dispatch);
+actions.orderCake();
+actions.orderCake();
+actions.orderCake();
+actions.restockCake(3);
 // 6.unsubscribe to the changes.
 
 unsubscribe();
