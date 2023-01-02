@@ -4,12 +4,20 @@ const bindActionCreator = redux.bindActionCreators;
 
 const CAKE_ORDERED = "CAKE_ORDERED";
 const CAKE_RESTOCKED = "CAKE_RESTOCKED";
+const ICE_CREAM_ORDERED = "ICE_CREAM_ORDERED";
 
 // 3. define action and action creators.
 
 function orderCake() {
   return {
     type: CAKE_ORDERED,
+    payload: 1,
+  };
+}
+
+function orderIceCream() {
+  return {
+    type: ICE_CREAM_ORDERED,
     payload: 1,
   };
 }
@@ -27,7 +35,7 @@ function restockCake(qty = 1) {
 
 const initialState = {
   numberOfCakes: 10,
-  anotherProperty: 0,
+  numberOfIceCreams: 10,
 };
 
 const reducer = (state = initialState, action) => {
@@ -35,12 +43,18 @@ const reducer = (state = initialState, action) => {
     case CAKE_ORDERED:
       return {
         ...state,
-        numberOfCakes: state.numberOfCakes - 1,
+        numberOfCakes: state.numberOfCakes - action.payload,
       };
     case CAKE_RESTOCKED:
       return {
         ...state,
         numberOfCakes: state.numberOfCakes + action.payload,
+      };
+
+    case ICE_CREAM_ORDERED:
+      return {
+        ...state,
+        numberOfIceCreams: state.numberOfIceCreams - action.payload,
       };
     default:
       return state;
@@ -64,10 +78,14 @@ const unsubscribe = store.subscribe(() =>
 // store.dispatch(orderCake());
 // store.dispatch(restockCake(3));
 
-const actions = bindActionCreator({ orderCake, restockCake }, store.dispatch);
+const actions = bindActionCreator(
+  { orderCake, restockCake, orderIceCream },
+  store.dispatch
+);
 actions.orderCake();
 actions.orderCake();
 actions.orderCake();
+actions.orderIceCream();
 actions.restockCake(3);
 // 6.unsubscribe to the changes.
 
