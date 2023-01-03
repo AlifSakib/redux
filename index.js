@@ -1,10 +1,12 @@
 const redux = require("redux");
 const createStore = redux.createStore;
 const bindActionCreator = redux.bindActionCreators;
+const combineReducers = redux.combineReducers;
 
 const CAKE_ORDERED = "CAKE_ORDERED";
 const CAKE_RESTOCKED = "CAKE_RESTOCKED";
 const ICE_CREAM_ORDERED = "ICE_CREAM_ORDERED";
+const ICE_CREAM_RESTOKED = "ICE_CREAM_RESTOKED";
 
 // 3. define action and action creators.
 
@@ -22,6 +24,13 @@ function orderIceCream() {
   };
 }
 
+function restokeIceCream(qty = 1) {
+  return {
+    type: ICE_CREAM_RESTOKED,
+    payload: qty,
+  };
+}
+
 // (previousState, action) => newState
 
 // declare the initial state and the reducer
@@ -33,12 +42,14 @@ function restockCake(qty = 1) {
   };
 }
 
-const initialState = {
+const initialCakeState = {
   numberOfCakes: 10,
-  numberOfIceCreams: 10,
+};
+const initialIceCreamState = {
+  numberOfIceCreams: 20,
 };
 
-const reducer = (state = initialState, action) => {
+const cakeReducer = (state = initialCakeState, action) => {
   switch (action.type) {
     case CAKE_ORDERED:
       return {
@@ -50,11 +61,21 @@ const reducer = (state = initialState, action) => {
         ...state,
         numberOfCakes: state.numberOfCakes + action.payload,
       };
-
+    default:
+      return state;
+  }
+};
+const IceCreamReducer = (state = initialIceCreamState, action) => {
+  switch (action.type) {
     case ICE_CREAM_ORDERED:
       return {
         ...state,
         numberOfIceCreams: state.numberOfIceCreams - action.payload,
+      };
+    case ICE_CREAM_RESTOKED:
+      return {
+        ...state,
+        numberOfIceCreams: state.numberOfIceCreams + action.payload,
       };
     default:
       return state;
@@ -63,7 +84,12 @@ const reducer = (state = initialState, action) => {
 
 // 1. Create a store
 
-const store = createStore(reducer);
+const rootReducer = combineReducers({
+  cake: cakeReducer,
+  iceCream: IceCreamReducer,
+});
+
+const store = createStore(rootReducer);
 console.log("Initial state", store.getState());
 
 // 4. Subscribe to the store.
@@ -79,14 +105,16 @@ const unsubscribe = store.subscribe(() =>
 // store.dispatch(restockCake(3));
 
 const actions = bindActionCreator(
-  { orderCake, restockCake, orderIceCream },
+  { orderCake, restockCake, orderIceCream, restokeIceCream },
   store.dispatch
 );
 actions.orderCake();
 actions.orderCake();
 actions.orderCake();
 actions.orderIceCream();
+
 actions.restockCake(3);
+actions.restokeIceCream(1);
 // 6.unsubscribe to the changes.
 
 unsubscribe();
