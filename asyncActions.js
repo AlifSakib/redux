@@ -1,4 +1,7 @@
 const { createStore } = require("redux");
+const applyMiddleware = redux.applyMiddleware;
+const thunkMiddleware = require("redux-thunk").default;
+const axios = require("axios");
 
 const initialState = {
   loading: false,
@@ -57,4 +60,10 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-const store = createStore(reducer);
+const fetchUsers = () => {
+  return function (dispatch) {
+    axios.get("https://jsonplaceholder.typicode.com/users");
+  };
+};
+
+const store = createStore(reducer, applyMiddleware(thunkMiddleware));
